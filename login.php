@@ -24,9 +24,14 @@ if (isset($_POST['signIn'])) {
     if ($result->num_rows > 0) {
         $data = $result->fetch_assoc();
         $_SESSION["username"] = $data["username"];
+        $_SESSION["role"] = $data["role"];
         $_SESSION["is_login"] = true;
 
-        header("location: dashboard.php");
+        if ($data['role'] == 'admin') {
+            header('Location: admin.php');
+        } else if ($data['role'] == 'user') {
+            header('Location: dashboard.php');
+        }
     } else {
         $login_message = "Akun tidak ditemukan";
     }
@@ -42,7 +47,7 @@ if (isset($_POST['signUp'])) {
     $hash_password = hash('sha256', $password);
 
     try {
-        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$hash_password')";
+        $sql = "INSERT INTO users (username, password, role) VALUES ('$username', '$hash_password', 'user')";
 
         if ($db->query($sql)) {
             $register_message = "Akun berhasil dibuat, Silahkan Login";
